@@ -10,6 +10,7 @@ Gem::Specification.new do |s|
   s.email       = ["mbklein@gmail.com"]
   s.summary     = "Modular Configuration"
   s.description = "Self-declaring, self-aware, modular configuration for Ruby apps"
+  s.homepage    = "https://github.com/mbklein/mod-cons"
  
   s.required_rubygems_version = ">= 1.3.6"
   

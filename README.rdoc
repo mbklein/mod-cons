@@ -170,6 +170,9 @@ its own arbitrarily-scoped copy instead.
   * to_hash
   * to_s
 
+== Releases
+- <b>0.1.1</b> Initial public release
+
 == Contributing to mod-cons
 
 * Check out the latest master to make sure the feature hasn't been implemented or the bug hasn't been fixed yet
