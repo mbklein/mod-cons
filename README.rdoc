@@ -1,0 +1,186 @@
+= mod-cons
+
+<b>Mod Cons</b> <i>(pl. n.)</i>. 1. Slang abbreviation of <i>Modern Conveniences</i>. 2. A
+great way to refer to the <i>Modern Conveniences</i> of <i>Modular Configuration</i>.
+
+Modular, decentralized configuration declarations for Ruby. Every module, class, or file 
+declares its own configurable parameters, which are merged into the (optionally) global 
+configuration object.
+
+== Usage
+
+=== Config Declarations
+
+In foo.rb:
+
+  ModCons::Config.declare(:foo) do
+    url nil
+    cert_file nil
+    key_file nil
+    key_pass ''
+  end
+
+  class Foo
+    def initialize
+      @config = ModCons::Config.foo
+    end
+
+    def get_thing
+      do_something_with(@config.url)
+      ### Or, forget the instance variable and go global ###
+      do_something_with(ModCons::Config.foo.url)
+    end
+  end
+
+In bar.rb:
+
+  ModCons::Config.declare(:bar) do
+    url nil
+    credentials do # In-place sub-configuration declaration!
+      username nil
+      password nil
+    end
+  end
+
+In baz.rb:
+
+  ModCons::Config.declare(:baz) {  key 'value'  }
+
+=== Application Configuration
+
+==== Block-Based
+
+  ModCons::Config.configure do
+    foo do
+      url 'http://example.com/path/to/bar/resource'
+      cert_file '/path/to/cert.cer'
+      key_file '/path/to/cert.key'
+      key_pass 'certpassword'
+    end
+
+    bar do
+      url 'http://example.com/path/to/bar/resource'
+      credentials.username 'validuser'
+      credentials.password 'validpass'
+      ### OR ###
+      credentials do
+        username 'validuser'
+        password 'validpass'
+      end
+    end
+
+    baz.key 'Some other value'
+  end
+
+==== Hash-Based
+
+  ModCons::Config.configure({
+    :foo => {
+      :url => "http://example.com/path/to/bar/resource",
+      :cert_file => "/path/to/cert.cer"
+      :key_file => "/path/to/cert.key",
+      :key_pass => "certpassword",
+    },
+    :bar => {
+      :url => "http://example.com/path/to/bar/resource",
+      :credentials => {
+        :username => "validuser",
+        :password => "validpass"
+      }
+    },
+    :baz => { :key => "Some other value" }
+  });
+
+You can even have it create a skeleton config file for you:
+
+  File.write('config.rb', 'w') { |f| f.write(ModCons::Config.template) }
+
+  # Produces a file called config.rb containing the following:
+  ModCons::Config.configure do
+    bar do
+      credentials do
+        password nil
+        username nil
+      end
+      url nil
+    end
+    baz.key "value"
+    foo do
+      cert_file nil
+      key_file nil
+      key_pass ""
+      url nil
+    end
+  end
+
+=== Configuration Change Listeners
+
+Want to keep resources external to the configuration object in sync with configuration changes?
+
+  ModCons::Config.declare(:quux) do
+    email nil
+    config_changed do |config|
+      some_global_object.email_address = config.email
+    end
+  end
+
+=== Local Configurations
+
+ModCons::Config is just a global instance of ModCons::Configuration. Your class, module, or application can define
+its own arbitrarily-scoped copy instead.
+
+  require 'forwardable'
+
+  class Foo
+    extend Forwardable
+    def_delegator :@config, :configure
+
+    def initialize
+      @config = ModCons::Configuration.declare(:config) do
+        key1 'default1'
+        key2 'default2'
+      end
+    end
+
+    def key_1
+      @config.key1
+    end
+  end
+
+  f = Foo.new
+  f.configure { key1 'value1' }
+  puts f.key_1
+
+== Known Issues
+
+* Configuration property names must begin with a letter, and can only contain letters, numbers, and underscores.
+
+* Due to the self-declaring, self-configuring, meta-programmed nature of ModCons::Configuration, the following tokens are not available as configuration property names:
+  * class
+  * config_changed
+  * configure
+  * declare
+  * initialize
+  * inspect
+  * instance_eval
+  * method_missing
+  * methods
+  * new
+  * template
+  * to_hash
+  * to_s
+
+== Contributing to mod-cons
+
+* Check out the latest master to make sure the feature hasn't been implemented or the bug hasn't been fixed yet
+* Check out the issue tracker to make sure someone already hasn't requested it and/or contributed it
+* Fork the project
+* Start a feature/bugfix branch
+* Commit and push until you are happy with your contribution
+* Make sure to add tests for it. This is important so I don't break it in a future version unintentionally.
+* Please try not to mess with the Rakefile, version, or history. If you want to have your own version, or is otherwise necessary, that is fine, but please isolate to its own commit so I can cherry-pick around it.
+
+== Copyright
+
+Copyright (c) 2011 Michael B. Klein. See LICENSE.txt for further details.
+
