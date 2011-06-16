@@ -107,14 +107,16 @@ module ModCons
         end
         self.instance_eval(&block) if block_given?
       end
-      unless self.to_hash == config_signature
-        @config_changed.each do |listener|
-          listener.call(self)
-        end
-      end
+      post_config unless self.to_hash == config_signature
       return self
     end
 
+    def post_config
+      @config_changed.each do |listener|
+        listener.call(self)
+      end
+    end
+    
     def config_changed(&block)
       @config_changed << block
       return self
