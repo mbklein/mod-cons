@@ -172,6 +172,7 @@ its own arbitrarily-scoped copy instead.
 
 == Releases
 - <b>0.1.1</b> Initial public release
+- <b>0.2.0</b> Add ModCons::Configuration#post_config to allow manual invocation of post configuration listeners
 
 == Contributing to mod-cons
 
