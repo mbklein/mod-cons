@@ -7,7 +7,7 @@ Modular, decentralized configuration declarations for Ruby. Every module, class,
 declares its own configurable parameters, which are merged into the (optionally) global 
 configuration object.
 
-{<img src="http://travis-ci.org/mbklein/mod-cons" />}[http://travis-ci.org/mbklein/mod-cons]
+{<img src="https://secure.travis-ci.org/mbklein/mod-cons.png" />}[http://travis-ci.org/mbklein/mod-cons]
 
 == Usage
 
